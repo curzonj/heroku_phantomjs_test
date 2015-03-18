@@ -32,6 +32,7 @@ function hammer_time() {
 }
 
 function launch_hammers() {
+    console.log("checking phantom limit", phantoms);
     while (phantoms < MAX_PHANTOM_PROCS) {
         hammer_time();
     }
