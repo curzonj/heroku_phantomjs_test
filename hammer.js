@@ -36,11 +36,9 @@ function launch_hammers() {
     while (phantoms < MAX_PHANTOM_PROCS) {
         hammer_time();
     }
-
-    setInterval(launch_hammers, 500);
 }
 
-launch_hammers();
+setInterval(launch_hammers, 500);
 
 /*
 cleanup: ./node_modules/.bin/forever cleanup.js
