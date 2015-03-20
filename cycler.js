@@ -25,4 +25,4 @@ function restart_hammers() {
 }
 
 // check every 5 minutes
-setInterval(restart_hammers, 1000*60*5);
+setInterval(restart_hammers, 1000*60);
