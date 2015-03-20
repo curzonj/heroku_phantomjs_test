@@ -6,21 +6,34 @@ var client = new Heroku({
     api_key: process.env.HEROKU_KEY
 });
 
+if (process.env.HEROKU_ENDPOINT !== undefined) {
+  client._rest_options.base_url = process.env.HEROKU_ENDPOINT;
+  client.hook("pre:request", function(req_opts) {
+    req_opts.strictSSL = false;
+  
+  });
+}
+
 function restart_hammers() {
   var app_name = process.env.RESTART_APP_NAME;
   var max_interval = process.env.MAX_LIFETIME ? parseInt(process.env.MAX_LIFETIME) : 1800000;
+  console.log("checking", app_name);
 
   client.app(app_name).dynos.list(function(err, data) {
-    data.forEach(function(dyno) {
-      var ddiff = Date.now() - new Date(dyno.updated_at).getTime();
-      console.log(dyno.name, ddiff);
+    if (err !== null) {
+      console.log(err, data);
+    } else {
+      data.forEach(function(dyno) {
+        var ddiff = Date.now() - new Date(dyno.updated_at).getTime();
+        console.log(dyno.name, ddiff);
 
-      if(dyno.name.match(/hammer/) && ddiff > max_interval) { // 30min
-        console.log(dyno.name, 'should restart');
+        if(dyno.name.match(/hammer/) && ddiff > max_interval) { // 30min
+          console.log(dyno.name, 'should restart');
 
-        client.app(app_name).dyno(dyno.id).restart();
-      }
-    });
+          client.app(app_name).dyno(dyno.id).restart();
+        }
+      });
+    }
   });
 }
 
